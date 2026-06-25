@@ -296,8 +296,8 @@ function calculate(){
   var paperRaw=pricePerM2*pArea;
   var paperPerSheet=paperRaw*pLossMul;
 
-  // 浪纸计价面积 = 长 × (宽+2cm) 厂家要求
-  var fArea=fL*(fW+20)/1000000;
+  // 浪纸计价面积 = 长 × 宽
+  var fArea=fL*fW/1000000;
   var fluteRaw=fPrice*fArea;
   var flutePerSheet=fluteRaw*fLossMul;
 
@@ -372,7 +372,7 @@ function calculate(){
   if(!enFlute){lines.push('【浪纸】已跳过');lines.push('');}
   else{
   lines.push('【浪纸】¥'+fPrice.toFixed(2)+'/㎡');
-  lines.push('  计价面积: '+fL.toFixed(1)+'×('+fW.toFixed(1)+'+20) = '+fArea.toFixed(4)+'㎡ × ¥'+fPrice.toFixed(2)+' = ¥'+fluteRaw.toFixed(4));
+  lines.push('  计价面积: '+fL.toFixed(1)+'×'+fW.toFixed(1)+' = '+fArea.toFixed(4)+'㎡ × ¥'+fPrice.toFixed(2)+' = ¥'+fluteRaw.toFixed(4));
   if(!isNaN(fLoss)&&fLoss>0) lines.push('  损耗: ('+totalSheets+'+'+fLoss+')/'+totalSheets+' = '+fLossMul.toFixed(4));
   else lines.push('  损耗: 默认3% = '+fLossMul.toFixed(4));
   lines.push('  单张价: ¥'+fluteRaw.toFixed(4)+' × '+fLossMul.toFixed(4)+' = ¥'+flutePerSheet.toFixed(4)+'/张 → ¥'+(flutePerSheet/nUp).toFixed(4)+'/个');
