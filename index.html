@@ -207,8 +207,8 @@ var PRICE = {
   surfaceK: {"烫金/银":0.30,"凹凸":0.25,"压纹":0.15},
   embossFee: 100,
   pressLimit: {"120":[104,75,50,45],"142":[145,106,76,52]},
-  press120: {"1":[300,300,0.08,0.08,501],"4":[580,580,0.10,0.10,501],"5":[880,880,0.15,0.15,501]},
-  press142: {"1":[500,500,0.12,0.12,500],"4":[850,850,0.20,0.20,500],"5":[1250,1250,0.27,0.27,600],"6":[1500,1700,0.30,0.36,700]},
+  press120: {"1":[300,0.08,501],"4":[580,0.10,501],"5":[880,0.15,501]},
+  press142: {"1":[500,0.12,500],"4":[850,0.20,500],"5":[1250,0.27,600],"6":[1700,0.36,700]},
   mount: 0.18,
   dieCut: {"930手动":[35,0.08],"1100手动":[35,0.10],"1300自动":[40,0.12],"1500自动":[50,0.20],"1800手动":[50,0.30]},
   glue: {"卡盒 糊口<20":0.03,"卡盒 展开>80":0.05,"瓦楞 糊口<20":0.05,"瓦楞 糊口>30":0.08,"瓦楞 长>60":0.13,"瓦楞 长>80":0.16},
@@ -246,17 +246,14 @@ function checkPressLimit(){
 function calcPressCost(){
   var mKey=document.getElementById('pressMachine').value,cn=document.getElementById('colors').value;
   var press=mKey==='120'?PRICE.press120:PRICE.press142;
-  var tier=press[cn]||[0,0,0,0,0];
+  var tier=press[cn]||[0,0,0];
   var nUp=parseInt(document.getElementById('piecesPerSheet').value)||1;
   var qty=parseInt(document.getElementById('quantity').value)||1000;
   var totalSheets=Math.ceil(qty/nUp);
-  var totalCost=0;
-  if(totalSheets<=1000) totalCost=tier[0];
-  else if(totalSheets<=3000) totalCost=tier[1];
-  else if(totalSheets<=10000) totalCost=tier[1]+tier[2]*(totalSheets-3000);
-  else totalCost=tier[3]*totalSheets;
-  var offset=document.getElementById('chkOffset').checked?tier[4]:0;
-  var plate=document.getElementById('chkPlate').checked?tier[4]:0;
+  var base=tier[0],overflow=tier[1];
+  var totalCost=totalSheets<=3000?base:totalSheets<10000?base+overflow*(totalSheets-3000):overflow*totalSheets;
+  var offset=document.getElementById('chkOffset').checked?tier[2]:0;
+  var plate=document.getElementById('chkPlate').checked?tier[2]:0;
   totalCost+=offset+plate;
   var costPerK=totalCost/(qty/1000);
   var perSheet=(totalCost-offset-plate)/totalSheets;
@@ -385,7 +382,7 @@ function calculate(){
   lines.push('【印刷】'+document.getElementById('pressMachine').value+'五色机 '+cn+'色');
   var pressKey=document.getElementById('pressMachine').value,pressTier;
   if(pressKey==='120')pressTier=PRICE.press120[cn];else pressTier=PRICE.press142[cn];
-  lines.push('  共'+totalSheets+'张 → '+ (totalSheets<=1000?'≤1k起印¥'+pressTier[0]:totalSheets<=3000?'≤3k ¥'+pressTier[1]:totalSheets<=10000?'3k-1w ¥'+pressTier[2]+'/张':'万张上 ¥'+pressTier[3]+'/张'));
+  lines.push('  共'+totalSheets+'张 → '+ (totalSheets<=3000?'≤3k 开机费¥'+pressTier[0]:totalSheets<10000?'开机¥'+pressTier[0]+' + ¥'+pressTier[1]+'/张×'+(totalSheets-3000):'万张上 ¥'+pressTier[1]+'/张×'+totalSheets));
   var offsetOn=document.getElementById('chkOffset').checked,plateOn=document.getElementById('chkPlate').checked;
   if(offsetOn)lines.push('  +下机费 ¥'+pressTier[4]);
   if(plateOn)lines.push('  +改版费 ¥'+pressTier[4]);
